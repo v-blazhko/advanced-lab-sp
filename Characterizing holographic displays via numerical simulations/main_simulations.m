@@ -118,6 +118,10 @@ obj_in = obj_in.*spherical_illum;  % the object field just after the hologram, w
 % Plot the PSF samples
 % ADD YOUR CODE HERE
 
+for method = 1:3
+    plot(sensor, PSF);
+end
+
 
 %% Analysis of results
 
@@ -130,6 +134,30 @@ mtf_freq_range = mtf_freq_c + [-0.5 0.5]*mtf_freq_c/4; % cpd (a small range of f
 ind = round(length(MTF)/2+ length(MTF)/2 * 2*X_u./(2*tand(0.5)*25e-3./mtf_freq_range)); % indices corresponding to the frequency range
 mtf_at_freq_c = mean(MTF(ind(1):ind(2))); % integrated over a small range around the exact frequency
 
+
+for z_f = -800e-3:0.1:400e-3
+    [PSF, sensor, X_u] = propagateField_PWD(obj_in, lambda, X_x, N, eye_loc, z_f, D_eye);
+    hold on;
+    plot(sensor, PSF);
+end
+%%
+mtf_at_freq_c_array = [];
+count = 1;
+for z_f = -1100e-3:0.1:1100e-3
+    [PSF, sensor, X_u] = propagateField_PWD(obj_in, lambda, X_x, N, eye_loc, z_f, D_eye);   
+    MTF = abs(fftshift(fft(PSF))) / sum(PSF); % (normalized) MTF as a function spatial frequency
+    % Spatial frequency at which the MTF is to be evaluated
+    mtf_freq_c = 15; % cpd
+    mtf_freq_range = mtf_freq_c + [-0.5 0.5]*mtf_freq_c/4; % cpd (a small range of frequencies)
+
+    ind = round(length(MTF)/2+ length(MTF)/2 * 2*X_u./(2*tand(0.5)*25e-3./mtf_freq_range)); % indices corresponding to the frequency range
+    mtf_at_freq_c = mean(MTF(ind(1):ind(2))); % integrated over a small range around the exact frequency
+    mtf_at_freq_c_array(count) = mtf_at_freq_c;
+    count = count + 1;
+end
+
+figure(); plot(z_f, mtf_at_freq_c_array, 'o'); hold on; plot(z_f, mtf_at_freq_c_array);
+%%
 % TASK:
 % The variable mtf_at_freq_c contains a single value. Repeat the simulations
 % for different z_f values, fit a function to the data points and plot the
