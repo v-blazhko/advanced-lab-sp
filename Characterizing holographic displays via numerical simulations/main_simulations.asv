@@ -157,8 +157,8 @@ end
 %%
 z_f_array = -600e-3:0.1:200e-3;
 fitType = 'linearinterp';
-% for fit function install Curve Fitting Toolbox:)
-fitobject = fit(transpose(z_f_array), transpose(mtf_at_freq_c_array), fitType);
+% for fit 
+fitobject = fit(transpose(z_f_array), transpose(mtf_at_freq_c_array),fitType);
 figure(2);
 plot(z_f_array, mtf_at_freq_c_array, 'o');
 hold on;
